@@ -1,0 +1,123 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Primary Colors */
+    --color-primary: #00FFFF; /* cyan-500 - Electric Cyan */
+    --color-primary-foreground: #0A0A0A; /* gray-950 - Void Black */
+    
+    /* Secondary Colors */
+    --color-secondary: #8A2BE2; /* purple-600 - Bright Purple */
+    --color-secondary-foreground: #FFFFFF; /* white */
+    
+    /* Accent Colors */
+    --color-accent: #FF1493; /* pink-600 - Hot Pink */
+    --color-accent-foreground: #FFFFFF; /* white */
+    
+    /* Background Colors */
+    --color-background: #0A0A0A; /* gray-950 - Void Black */
+    --color-foreground: #FFFFFF; /* white */
+    
+    /* Surface Colors */
+    --color-card: #1A1A1A; /* gray-900 - Matte Dark */
+    --color-card-foreground: #FFFFFF; /* white */
+    
+    --color-popover: #1A1A1A; /* gray-900 - Matte Dark */
+    --color-popover-foreground: #FFFFFF; /* white */
+    
+    /* Muted Colors */
+    --color-muted: #2A2A2A; /* gray-800 */
+    --color-muted-foreground: #B0B0B0; /* gray-400 - Light Gray */
+    
+    /* Border & Input */
+    --color-border: #2A2A2A; /* gray-800 */
+    --color-input: #2A2A2A; /* gray-800 */
+    --color-ring: #00FFFF; /* cyan-500 - Electric Cyan */
+    
+    /* Status Colors */
+    --color-success: #00FF88; /* green-400 - Lime Green */
+    --color-success-foreground: #0A0A0A; /* gray-950 - Void Black */
+    
+    --color-warning: #FF6B00; /* orange-600 - Neon Orange */
+    --color-warning-foreground: #FFFFFF; /* white */
+    
+    --color-error: #FF4444; /* red-500 - Bright Red */
+    --color-error-foreground: #FFFFFF; /* white */
+    
+    --color-destructive: #FF4444; /* red-500 - Bright Red */
+    --color-destructive-foreground: #FFFFFF; /* white */
+    
+    /* Radius */
+    --radius: 0.5rem;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Orbitron', sans-serif;
+  }
+  
+  button {
+    font-family: 'Rajdhani', sans-serif;
+  }
+  
+  code, pre {
+    font-family: 'JetBrains Mono', monospace;
+  }
+}
+
+@layer utilities {
+  .text-glow-cyan {
+    text-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+  }
+  
+  .text-glow-purple {
+    text-shadow: 0 0 20px rgba(138, 43, 226, 0.5);
+  }
+  
+  .text-glow-pink {
+    text-shadow: 0 0 20px rgba(255, 20, 147, 0.5);
+  }
+  
+  .box-glow-cyan {
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+  }
+  
+  .box-glow-purple {
+    box-shadow: 0 0 20px rgba(138, 43, 226, 0.3);
+  }
+  
+  .box-glow-pink {
+    box-shadow: 0 0 20px rgba(255, 20, 147, 0.3);
+  }
+  
+  .elevation-subtle {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  }
+  
+  .spring-animation {
+    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(1) brightness(100%) sepia(100%) saturate(10000%) hue-rotate(180deg);
+    cursor: pointer;
+  }
+}
