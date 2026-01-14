@@ -1,0 +1,117 @@
+// LIC's Micro Bachat
+digraph {
+	rankdir=TB size=10
+	node [fontname=Helvetica fontsize=10 shape=rect style="rounded,filled"]
+	edge [fontname=Helvetica fontsize=9]
+	START [label="Start Policy Check" fillcolor="#333333" fontcolor=white shape=circle style=filled width=0.8]
+	R1_COND [label="CHECK:\n- death of life assured during the policy term" color="#f57c00" fillcolor="#fff3e0" shape=diamond style=filled]
+	START -> R1_COND
+	R1_ACT [label=<<TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0">
+              <TR><TD><B>R1</B></TD></TR>
+              <TR><TD>Pay Sum Assured on Death and along with Loyalty Additions, if any, provided the policy is in-force.</TD></TR>
+              <TR><TD><I>By: LIC</I></TD></TR>
+            </TABLE>> color="#2e7d32" fillcolor="#e8f5e9" shape=note style=filled]
+	R1_COND -> R1_ACT [label=Yes]
+	R1_COND -> R2_COND [label=No color="#999999" style=dashed]
+	R2_COND [label="CHECK:\n- death due to suicide within 12 months from date of commencement of risk" color="#f57c00" fillcolor="#fff3e0" shape=diamond style=filled]
+	R1_ACT -> R2_COND
+	R2_ACT [label=<<TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0">
+              <TR><TD><B>R2</B></TD></TR>
+              <TR><TD>Pay 80% of the total premiums paid till the date of death (excluding any taxes, extra premium and rider premium, if any)</TD></TR>
+              <TR><TD><I>By: LIC</I></TD></TR>
+            </TABLE>> color="#2e7d32" fillcolor="#e8f5e9" shape=note style=filled]
+	R2_COND -> R2_ACT [label=Yes]
+	R2_COND -> R3_COND [label=No color="#999999" style=dashed]
+	R3_COND [label="CHECK:\n- death due to suicide within 12 months from date of revival" color="#f57c00" fillcolor="#fff3e0" shape=diamond style=filled]
+	R2_ACT -> R3_COND
+	R3_ACT [label=<<TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0">
+              <TR><TD><B>R3</B></TD></TR>
+              <TR><TD>Pay higher of 80% of the total premiums paid till the date of death (excluding any taxes, extra premium and rider premium, if any)</TD></TR>
+              <TR><TD><I>By: LIC</I></TD></TR>
+            </TABLE>> color="#2e7d32" fillcolor="#e8f5e9" shape=note style=filled]
+	R3_COND -> R3_ACT [label=Yes]
+	R3_COND -> R4_COND [label=No color="#999999" style=dashed]
+	R4_COND [label="CHECK:\n- death due to suicide within 12 months from date of revival" color="#f57c00" fillcolor="#fff3e0" shape=diamond style=filled]
+	R3_ACT -> R4_COND
+	R4_ACT [label=<<TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0">
+              <TR><TD><B>R4</B></TD></TR>
+              <TR><TD>the surrender value available as on date of death</TD></TR>
+              <TR><TD><I>By: LIC</I></TD></TR>
+            </TABLE>> color="#2e7d32" fillcolor="#e8f5e9" shape=note style=filled]
+	R4_COND -> R4_ACT [label=Yes]
+	R4_COND -> R5_COND [label=No color="#999999" style=dashed]
+	R5_COND [label="CHECK:\n- policy lapsed without acquiring paid-up value" color="#f57c00" fillcolor="#fff3e0" shape=diamond style=filled]
+	R4_ACT -> R5_COND
+	R5_ACT [label=<<TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0">
+              <TR><TD><B>R5</B></TD></TR>
+              <TR><TD>Nothing payable under such policy</TD></TR>
+              <TR><TD><I>By: LIC</I></TD></TR>
+            </TABLE>> color="#2e7d32" fillcolor="#e8f5e9" shape=note style=filled]
+	R5_COND -> R5_ACT [label=Yes]
+	R5_COND -> R6_COND [label=No color="#999999" style=dashed]
+	R6_COND [label="CHECK:\n- policy is in-force and premiums have been paid for at least five full years" color="#f57c00" fillcolor="#fff3e0" shape=diamond style=filled]
+	R5_ACT -> R6_COND
+	R6_ACT [label=<<TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0">
+              <TR><TD><B>R6</B></TD></TR>
+              <TR><TD>Pay Death Benefit which shall not be less than 105% of total premiums paid upto the date of death</TD></TR>
+              <TR><TD><I>By: LIC</I></TD></TR>
+            </TABLE>> color="#2e7d32" fillcolor="#e8f5e9" shape=note style=filled]
+	R6_COND -> R6_ACT [label=Yes]
+	R6_COND -> R7_COND [label=No color="#999999" style=dashed]
+	R7_COND [label="CHECK:\n- policy is in-force and all due premiums have been paid" color="#f57c00" fillcolor="#fff3e0" shape=diamond style=filled]
+	R6_ACT -> R7_COND
+	R7_ACT [label=<<TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0">
+              <TR><TD><B>R7</B></TD></TR>
+              <TR><TD>Pay Sum Assured on Maturity along with Loyalty Additions</TD></TR>
+              <TR><TD><I>By: LIC</I></TD></TR>
+            </TABLE>> color="#2e7d32" fillcolor="#e8f5e9" shape=note style=filled]
+	R7_COND -> R7_ACT [label=Yes]
+	R7_COND -> R8_COND [label=No color="#999999" style=dashed]
+	R8_COND [label="CHECK:\n- policy can be surrendered after completion of first policy year" color="#f57c00" fillcolor="#fff3e0" shape=diamond style=filled]
+	R7_ACT -> R8_COND
+	R8_ACT [label=<<TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0">
+              <TR><TD><B>R8</B></TD></TR>
+              <TR><TD>Pay Surrender Value which shall be higher of Guaranteed Surrender Value (GSV) and Special Surrender Value (SSV)</TD></TR>
+              <TR><TD><I>By: LIC</I></TD></TR>
+            </TABLE>> color="#2e7d32" fillcolor="#e8f5e9" shape=note style=filled]
+	R8_COND -> R8_ACT [label=Yes]
+	R8_COND -> R9_COND [label=No color="#999999" style=dashed]
+	R9_COND [label="CHECK:\n- policy is in-lapse" color="#f57c00" fillcolor="#fff3e0" shape=diamond style=filled]
+	R8_ACT -> R9_COND
+	R9_ACT [label=<<TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0">
+              <TR><TD><B>R9</B></TD></TR>
+              <TR><TD>Pay Auto Cover Period benefits as specified in Condition 2 of Part D</TD></TR>
+              <TR><TD><I>By: LIC</I></TD></TR>
+            </TABLE>> color="#d32f2f" fillcolor="#ffeeee" shape=note style=filled]
+	R9_COND -> R9_ACT [label=Yes]
+	R9_COND -> R10_COND [label=No color="#999999" style=dashed]
+	R10_COND [label="CHECK:\n- policy loan can be availed after completion of first policy year" color="#f57c00" fillcolor="#fff3e0" shape=diamond style=filled]
+	R9_ACT -> R10_COND
+	R10_ACT [label=<<TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0">
+              <TR><TD><B>R10</B></TD></TR>
+              <TR><TD>Pay Loan as per terms and conditions of the policy</TD></TR>
+              <TR><TD><I>By: LIC</I></TD></TR>
+            </TABLE>> color="#2e7d32" fillcolor="#e8f5e9" shape=note style=filled]
+	R10_COND -> R10_ACT [label=Yes]
+	R10_COND -> R11_COND [label=No color="#999999" style=dashed]
+	R11_COND [label="CHECK:\n- claim is settled within 15 days for Death Claims not requiring Investigations" color="#f57c00" fillcolor="#fff3e0" shape=diamond style=filled]
+	R10_ACT -> R11_COND
+	R11_ACT [label=<<TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0">
+              <TR><TD><B>R11</B></TD></TR>
+              <TR><TD>Pay claim amount as per policy terms and conditions</TD></TR>
+              <TR><TD><I>By: LIC</I></TD></TR>
+            </TABLE>> color="#2e7d32" fillcolor="#e8f5e9" shape=note style=filled]
+	R11_COND -> R11_ACT [label=Yes]
+	R11_COND -> R12_COND [label=No color="#999999" style=dashed]
+	R12_COND [label="CHECK:\n- claim is settled within 45 days for Early Death Claims requiring investigations" color="#f57c00" fillcolor="#fff3e0" shape=diamond style=filled]
+	R11_ACT -> R12_COND
+	R12_ACT [label=<<TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0">
+              <TR><TD><B>R12</B></TD></TR>
+              <TR><TD>Pay claim amount as per policy terms and conditions</TD></TR>
+              <TR><TD><I>By: LIC</I></TD></TR>
+            </TABLE>> color="#2e7d32" fillcolor="#e8f5e9" shape=note style=filled]
+	R12_COND -> R12_ACT [label=Yes]
+	R12_COND -> END [label=No color="#999999" style=dashed]
+	END [label="End Process" fillcolor="#333333" fontcolor=white shape=doublecircle style=filled]
+	R12_ACT -> END
+}

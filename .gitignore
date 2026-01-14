@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.env
+
+# Mac
+.DS_Store
+
+# Logs and Output
+*.log
+demo_output.log
+test_output.log
+tunnel_clarify_output.json
+tunnel_test_output.json
+response.json
+
+# Demo Data Generation
+demo_data/*.json
+demo_data/*.txt
+!demo_data/sample_policy.pdf
+
+# IDEs
+.idea/
+.vscode/

@@ -1,0 +1,16 @@
+pydantic
+python-dotenv
+graphviz
+tqdm
+deep-translator
+colorama
+pypdf
+reportlab
+fastapi
+uvicorn
+python-multipart
+pdfplumber
+
+
+
+
