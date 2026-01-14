@@ -1,0 +1,46 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Task Ingestion Schema",
+    "description": "Schema for tasks sent to the Execution Backend",
+    "type": "object",
+    "properties": {
+        "policy_id": {
+            "type": "string",
+            "description": "Reference ID of the source policy"
+        },
+        "rules": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "rule_id": {
+                        "type": "string",
+                        "description": "ID of the rule this task is based on"
+                    },
+                    "action": {
+                        "type": "string",
+                        "description": "Action description used as the task name"
+                    },
+                    "responsible_role": {
+                        "type": "string",
+                        "description": "Role assigned to this task"
+                    },
+                    "deadline": {
+                        "type": "string",
+                        "description": "Deadline string (e.g., '30 days'). Empty string if none."
+                    }
+                },
+                "required": [
+                    "rule_id",
+                    "action",
+                    "responsible_role",
+                    "deadline"
+                ]
+            }
+        }
+    },
+    "required": [
+        "policy_id",
+        "rules"
+    ]
+}

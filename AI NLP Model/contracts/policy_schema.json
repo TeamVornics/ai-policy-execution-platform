@@ -1,0 +1,68 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Policy Rules Schema",
+    "description": "Schema for policy rules extracted by the NLP Engine",
+    "type": "object",
+    "properties": {
+        "policy_id": {
+            "type": "string",
+            "description": "Unique identifier for the policy"
+        },
+        "policy_title": {
+            "type": "string",
+            "description": "Title of the policy"
+        },
+        "rules": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "rule_id": {
+                        "type": "string",
+                        "description": "Unique identifier for the rule (e.g., R1)"
+                    },
+                    "conditions": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "description": "List of conditions that trigger this rule"
+                    },
+                    "action": {
+                        "type": "string",
+                        "description": " The action to be taken"
+                    },
+                    "responsible_role": {
+                        "type": "string",
+                        "description": "Role responsible for executing the action"
+                    },
+                    "beneficiary": {
+                        "type": "string",
+                        "description": "Beneficiary of the action (optional)"
+                    },
+                    "deadline": {
+                        "type": "string",
+                        "description": "Time constraint for the action"
+                    },
+                    "ambiguity_flag": {
+                        "type": "boolean",
+                        "description": "True if the rule contains vague language"
+                    },
+                    "ambiguity_reason": {
+                        "type": "string",
+                        "description": "Explanation of why the rule is ambiguous"
+                    }
+                },
+                "required": [
+                    "rule_id",
+                    "action",
+                    "responsible_role"
+                ]
+            }
+        }
+    },
+    "required": [
+        "policy_id",
+        "rules"
+    ]
+}
