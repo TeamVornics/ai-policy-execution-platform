@@ -8,7 +8,18 @@
 
 The **AI Policy Execution Platform** is a cutting-edge solution designed to automate, analyze, and visualize complex policy documents. Leveraging advanced **Natural Language Processing (NLP)** and **3D Data Visualization**, it transforms static PDF policies into actionable, real-time workflows.
 
-Built for the **[Hackathon Name]**, this platform bridges the gap between bureaucratic documentation and digital execution.
+This repository contains the complete source code for the platform, organized into a modern monorepo structure.
+
+## 📂 Repository Structure
+
+```
+ai-policy-execution-platform/
+├── frontend/           # Next.js 15 + React 19 Client Application
+├── backend/            # Python FastAPI Backend & Integration Logic
+├── simulation/         # Simulation Engine for Testing & Demo
+├── contracts/          # Data Schemas and API Contracts
+└── demo/               # Demo Scripts and Walkthroughs
+```
 
 ## ✨ Key Features
 
@@ -33,43 +44,52 @@ Built for the **[Hackathon Name]**, this platform bridges the gap between bureau
 
 ## 🛠️ Tech Stack
 
-- **Frontend**: Next.js 15, React 19, TypeScript
-- **Styling**: Tailwind CSS, Framer Motion (Animations)
-- **Backend**: Python (FastAPI), MongoDB (for Task Management)
-- **AI/NLP**: Custom NLP Pipeline (hosted separately)
+### Frontend
+- **Framework**: Next.js 15 (App Router)
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS, Framer Motion
+- **Icons**: Heroicons
+
+### Backend & AI
+- **Server**: Python FastAPI
+- **Database**: MongoDB
+- **AI Models**: Custom NLP Pipeline (SpaCy/Transformers)
 
 ## 🚀 Getting Started
 
-### Prerequisites
-- Node.js 18+
-- npm or yarn
+### 1. Frontend Setup (The Dashboard)
 
-### Installation
+The frontend is the heart of the user experience.
 
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/ankitsaini300000506-dotcom/ai-policy-execution-platform.git
-   cd ai-policy-execution-platform/frontend
-   ```
+```bash
+# Navigate to frontend directory
+cd frontend
 
-2. **Install dependencies**
-   ```bash
-   npm install
-   ```
+# Install dependencies
+npm install
 
-3. **Set up Environment Variables**
-   Create a `.env` file in the `frontend` directory:
-   ```env
-   NEXT_PUBLIC_API_URL=https://eighty-clubs-stop.loca.lt
-   ```
+# Set up environment variables
+# Create a .env file with:
+# NEXT_PUBLIC_API_URL=https://eighty-clubs-stop.loca.lt
 
-4. **Run the Development Server**
-   ```bash
-   npm run dev
-   ```
+# Run the development server
+npm run dev
+```
 
-5. **Open the App**
-   Visit [http://localhost:3000](http://localhost:3000) to launch the platform.
+Visit [http://localhost:3000](http://localhost:3000) to launch the dashboard.
+
+### 2. Backend Setup
+
+```bash
+# Navigate to backend directory
+cd backend
+
+# Install requirements
+pip install -r requirements.txt
+
+# Run the server
+uvicorn main:app --reload
+```
 
 ## 📸 Screenshots
 
@@ -80,7 +100,7 @@ Built for the **[Hackathon Name]**, this platform bridges the gap between bureau
 ## 🤝 Contributors
 
 - **Ankit Saini** - *Lead Developer*
-- **[Team Member Name]** - *[Role]*
+- **Team** - *AI & Backend Integration*
 
 ---
 
