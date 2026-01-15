@@ -117,81 +117,157 @@ async def process_policy(
     policy_id: str = Form(...),
     file: UploadFile = File(...)
 ):
-    print(f"📥 Received processing request for Policy: {policy_id}")
-    
-    # 1. Save PDF temporarily / Read content
-    # For speed/memory, we can read directly from bytes without saving to disk if pdfplumber supports it.
-    # pdfplumber.open() accepts a path or a file-like object.
+    print(f"\n{'='*60}")
+    print(f"📥 NEW REQUEST: Policy ID = {policy_id}")
+    print(f"📄 Filename: {file.filename}")
+    print(f"📋 Content-Type: {file.content_type}")
+    print(f"{'='*60}\n")
     
     try:
-        pdf_bytes = await file.read()
-        pdf_file = io.BytesIO(pdf_bytes)
+        # ============================================================
+        # STEP 1: FILE VALIDATION
+        # ============================================================
         
-        # 2. Extract Text (Deterministic)
-        print("📄 Extracting text with pdfplumber...")
+        # 1.1 Read file bytes
+        pdf_bytes = await file.read()
+        file_size = len(pdf_bytes)
+        print(f"📊 File size: {file_size:,} bytes ({file_size / 1024 / 1024:.2f} MB)")
+        
+        # 1.2 Validate file size (max 10MB)
+        MAX_FILE_SIZE = 10 * 1024 * 1024  # 10MB
+        if file_size > MAX_FILE_SIZE:
+            error_msg = f"File too large: {file_size / 1024 / 1024:.2f}MB (max 10MB)"
+            print(f"❌ {error_msg}")
+            raise HTTPException(status_code=413, detail=error_msg)
+        
+        if file_size == 0:
+            error_msg = "Empty file received"
+            print(f"❌ {error_msg}")
+            raise HTTPException(status_code=400, detail=error_msg)
+        
+        # 1.3 Validate PDF signature (magic bytes)
+        pdf_signatures = [b'%PDF-1.', b'%PDF-2.']
+        is_valid_pdf = any(pdf_bytes.startswith(sig) for sig in pdf_signatures)
+        
+        if not is_valid_pdf:
+            error_msg = f"Invalid PDF file. File starts with: {pdf_bytes[:20]}"
+            print(f"❌ {error_msg}")
+            raise HTTPException(status_code=400, detail="Invalid PDF file format")
+        
+        print("✅ File validation passed")
+        
+        # ============================================================
+        # STEP 2: TEXT EXTRACTION
+        # ============================================================
+        
+        pdf_file = io.BytesIO(pdf_bytes)
+        print("\n📄 Starting text extraction with pdfplumber...")
         extracted_text = ""
+        
         try:
             with pdfplumber.open(pdf_file) as pdf:
-                for page in pdf.pages:
+                total_pages = len(pdf.pages)
+                print(f"📖 PDF has {total_pages} pages")
+                
+                for i, page in enumerate(pdf.pages, 1):
                     text = page.extract_text()
                     if text:
                         extracted_text += text + "\n"
+                        print(f"  ✓ Page {i}/{total_pages}: {len(text)} chars")
+                    else:
+                        print(f"  ⚠ Page {i}/{total_pages}: No text extracted")
+                        
         except Exception as e:
-            print(f"⚠️ pdfplumber failed: {e}")
+            print(f"⚠️ pdfplumber failed: {type(e).__name__}: {str(e)}")
+            extracted_text = ""
 
         # Fallback to pypdf if text is empty
         if not extracted_text.strip():
-            print("⚠️ pdfplumber yielded no text. Trying pypdf...")
+            print("\n⚠️ pdfplumber yielded no text. Trying pypdf fallback...")
             try:
                 import pypdf
                 pdf_file.seek(0)
                 reader = pypdf.PdfReader(pdf_file)
-                for page in reader.pages:
+                total_pages = len(reader.pages)
+                print(f"📖 PDF has {total_pages} pages (pypdf)")
+                
+                for i, page in enumerate(reader.pages, 1):
                     text = page.extract_text()
                     if text:
                         extracted_text += text + "\n"
+                        print(f"  ✓ Page {i}/{total_pages}: {len(text)} chars")
+                        
             except Exception as e:
-                print(f"❌ pypdf also failed: {e}")
+                print(f"❌ pypdf also failed: {type(e).__name__}: {str(e)}")
+                raise HTTPException(
+                    status_code=422, 
+                    detail=f"Could not extract text from PDF. Error: {str(e)}"
+                )
         
-        # Clean text (basic cleanup)
+        # ============================================================
+        # STEP 3: TEXT CLEANING & VALIDATION
+        # ============================================================
+        
+        print(f"\n🧹 Raw text length: {len(extracted_text)} chars")
         cleaned_text = clean_text(extracted_text)
-        print(f"📄 Text Extraction Result: {len(cleaned_text)} chars found.")
+        print(f"✨ Cleaned text length: {len(cleaned_text)} chars")
         
         if len(cleaned_text) < 50:
-             print("⚠️  WARNING: Very little text extracted. Is this a scanned/image-based PDF?")
-             # We can't do much if text is missing without OCR, but let's at least log it explicitly.
-             # If we have ocr tools we could try, but let's stick to requirements first.
-             
-        # 3. Rule Extraction (AI Logic)
-        print(f"🤖 Extracting rules via AI from {len(cleaned_text)} chars...")
-        parser = PolicyParser() # Initializes Ollama client
+            error_msg = f"Insufficient text extracted ({len(cleaned_text)} chars). PDF may be scanned/image-based."
+            print(f"❌ {error_msg}")
+            raise HTTPException(status_code=422, detail=error_msg)
         
-        # Logic to extract rules
-        # We pass the full clean text. Parser handles chunking if needed.
-        extraction_result = parser.extract_rules_from_policy(cleaned_text)
+        print("✅ Text extraction successful")
         
-        rules = extraction_result.get("rules", [])
-        policy_title = extraction_result.get("policy_title", "Untitled Policy")
+        # ============================================================
+        # STEP 4: AI RULE EXTRACTION (with timeout protection)
+        # ============================================================
         
-        # 4. Ambiguity Detection (Rule Based)
-        print("?? Detecting ambiguities...")
+        print(f"\n🤖 Starting AI rule extraction...")
+        print(f"📝 Input text: {len(cleaned_text)} chars")
+        
+        try:
+            parser = PolicyParser()
+            extraction_result = parser.extract_rules_from_policy(cleaned_text)
+            
+            rules = extraction_result.get("rules", [])
+            policy_title = extraction_result.get("policy_title", "Untitled Policy")
+            
+            print(f"✅ AI extraction complete: {len(rules)} rules found")
+            print(f"📋 Policy title: {policy_title}")
+            
+        except Exception as e:
+            error_msg = f"AI extraction failed: {type(e).__name__}: {str(e)}"
+            print(f"❌ {error_msg}")
+            raise HTTPException(status_code=500, detail=error_msg)
+        
+        # ============================================================
+        # STEP 5: AMBIGUITY DETECTION
+        # ============================================================
+        
+        print("\n🔍 Running ambiguity detection...")
         detector = AmbiguityDetector()
-        
-        # The parser might have already run some checks, but we run the explicit detector
-        # to ensure compliance with our specific ambiguity flags.
-        # We re-run detection on the raw extracted rules
         rules = detector.detect_ambiguities(rules)
         
-        # 5. Format Output & Store
+        ambiguous_count = sum(1 for r in rules if r.get("ambiguity_flag", False))
+        print(f"✅ Ambiguity detection complete: {ambiguous_count}/{len(rules)} rules flagged")
+        
+        # ============================================================
+        # STEP 6: FINALIZE & STORE
+        # ============================================================
+        
         final_rules = clean_rules_for_output(rules)
         
-        # Store for clarification
         POLICY_STORE[policy_id] = {
             "policy_title": policy_title,
             "rules": final_rules
         }
         
-        print(f"✅ Processing Complete. Extracted {len(final_rules)} rules.")
+        print(f"\n{'='*60}")
+        print(f"✅ SUCCESS: Policy {policy_id} processed")
+        print(f"📊 Total rules: {len(final_rules)}")
+        print(f"⚠️  Ambiguous rules: {ambiguous_count}")
+        print(f"{'='*60}\n")
         
         return {
             "policy_id": policy_id,
@@ -199,10 +275,16 @@ async def process_policy(
             "rules": final_rules
         }
 
+    except HTTPException:
+        # Re-raise HTTP exceptions as-is
+        raise
+        
     except Exception as e:
-        print(f"❌ Error: {str(e)}")
-        # In case of error, return empty or raise HTTP exception
-        raise HTTPException(status_code=500, detail=str(e))
+        # Catch-all for unexpected errors
+        error_msg = f"Unexpected error: {type(e).__name__}: {str(e)}"
+        print(f"\n❌ FATAL ERROR: {error_msg}")
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=error_msg)
 
 
 @app.post("/api/policy/clarify", response_model=ClarifiedRuleResponse)
